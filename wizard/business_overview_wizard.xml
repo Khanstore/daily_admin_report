@@ -1,0 +1,30 @@
+<odoo>
+    <record id="view_business_overview_wizard" model="ir.ui.view">
+        <field name="name">business.overview.report.form</field>
+        <field name="model">business.overview.report</field>
+        <field name="arch" type="xml">
+            <form string="Business Overview">
+                <group>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                </group>
+                <footer>
+                    <button name="action_print_report" string="Print Report" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_business_overview_wizard" model="ir.actions.act_window">
+        <field name="name">Business Overview</field>
+        <field name="res_model">business.overview.report</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_business_overview_root"
+              name="Daily Admin Report"
+              parent="account.menu_finance_reports"
+              action="action_business_overview_wizard"/>
+</odoo>
