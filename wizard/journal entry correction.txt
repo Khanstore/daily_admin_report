@@ -1,0 +1,56 @@
+SELECT ap.journal_id ,am.journal_id,aml.journal_id  ,aml.account_id,aj.default_account_id,aj.id
+FROM public.account_payment as ap
+join account_move as am on am.id=ap.move_id
+join account_move_line as aml on aml.move_id=am.id
+join account_journal as aj on ap.journal_id =aj.id
+
+where (ap.payment_type='inbound' and aml.debit<>0) and aml.account_id<>aj.default_account_id;
+
+UPDATE account_move_line AS aml
+SET account_id = aj.default_account_id
+FROM account_payment AS ap
+JOIN account_move AS am ON am.id = ap.move_id
+JOIN account_journal AS aj ON aj.id = ap.journal_id
+WHERE
+    aml.move_id = am.id
+    AND ap.payment_type = 'outbound'
+    AND aml.credit <> 0
+    AND aml.account_id <> aj.default_account_id;
+
+SELECT
+    ap.id AS payment_id,
+    ap.name AS payment_name,
+    ap.journal_id AS payment_journal,
+    am.id AS move_id,
+    am.name AS move_name,
+    aml.id AS move_line_id,
+    aml.journal_id AS line_journal,
+    aml.account_id AS line_account,
+    aj.default_account_id AS journal_default_account,
+    aj.name AS journal_name
+FROM account_payment AS ap
+JOIN account_move AS am ON am.id = ap.move_id
+JOIN account_move_line AS aml ON aml.move_id = am.id
+JOIN account_journal AS aj ON aj.id = ap.journal_id
+WHERE
+    ap.payment_type = 'inbound'
+    AND aml.debit <> 0
+    AND aml.account_id <> aj.default_account_id
+ORDER BY ap.id, aml.id;
+
+-- check account_payment.outstanding_account_id is different from account_Journal.default_account_id
+SELECT ap.id,ap.name,ap.outstanding_account_id,aj.default_account_id FROM
+public.account_payment as ap
+join account_journal as aj on ap.journal_id=aj.id
+where ap.outstanding_account_id<>aj.default_account_id
+
+ORDER BY ap.id ASC ;
+
+
+
+-- update account_payment.outstanding_account_id to account_Journal.default_account_id
+-- UPDATE account_payment AS ap
+-- SET outstanding_account_id = aj.default_account_id
+-- FROM account_journal AS aj
+-- WHERE ap.journal_id = aj.id
+--   AND ap.outstanding_account_id <> aj.default_account_id;

@@ -97,7 +97,8 @@ class BusinessOverviewWizard(models.TransientModel):
         journal_closing_direct_payments_balance=self.get_journal_direct_payments_balance(date_to=self.date_to,date_included=True)
         journal_opening_last_statement_balance=self._get_journal_current_statement_balance(date_to=self.date_from,date_included=False)
         journal_closing_last_statement__balance=self._get_journal_current_statement_balance(date_to=self.date_to,date_included=True)
-
+        # self.check_accounting( [12], self.date_from, 350)
+        # self.journal_entry_correction()
         #note combine both dict as opneing and closing amounts
         for key in journal_opening_direct_payments_balance:
             journal_details=journal_opening_direct_payments_balance[key]
@@ -275,3 +276,91 @@ class BusinessOverviewWizard(models.TransientModel):
     def action_print_report(self):
         data = self._get_data()
         return self.env.ref('daily_admin_report.action_report_company_overview').report_action(self, data=data)
+
+
+
+    def check_accounting(self,journal,date_from,days):
+        journals = self.env['account.journal'].search([('id', 'in', journal)])
+        direct_payment={}
+        last_statement={}
+        # date_from=datetime.datetime.strptime(date_from, "%Y-%m-%d").date()
+        day=1
+        while  day <= days:
+
+            direct_payment[date_from]=self.get_journal_direct_payments_balance(date_to=date_from,date_included=True)
+            last_statement[date_from]=self._get_journal_current_statement_balance(date_to=date_from, date_included=False)
+            date_from=date_from + timedelta(days=2)
+            day=day+2
+
+        print ('date,','journal,','statement,','payment,','balance')
+        for journal in  journals:
+            for key in last_statement.keys():
+                print (key ,",",journal.name,",",last_statement[key][journal.id]['balance_end_real'],",",direct_payment[key][journal.id]['balance'],",",direct_payment[key][journal.id]['balance']+last_statement[key][journal.id]['balance_end_real'])
+
+
+    def journal_entry_correction(self):
+        # delete bank statement lines and reprocess
+        # statements = self.env['account.bank.statement'].search([])
+        # for rec in statements:
+        #     rec.button_cancel_reconciliation()
+        #     rec.unlink()
+        # statement_lines = self.env['account.bank.statement.line'].search([])
+        # for line in statement_lines:
+        #     if statement_line.reconciled:
+        #         # Iterate through the move lines linked to this statement line
+        #         for move_line in statement_line.move_line_ids:
+        #             # Remove the reconciliation
+        #             move_line.remove_move_reconcile()
+        #
+        #         # Optionally, set the reconciled flag to False
+        #         statement_line.reconciled = False
+        #     line.unlink()
+
+        # update move lines account_id of outbound payments
+        outbound_payments = self.env['account.payment'].search([('payment_type', '=', 'outbound')])
+
+        for payment in outbound_payments:
+            move = payment.move_id
+            journal = payment.journal_id
+            default_account = journal.default_account_id
+
+            if move and default_account:
+                # Find move lines matching conditions
+                move_lines = self.env['account.move.line'].search([
+                    ('move_id', '=', move.id),
+                    ('credit', '!=', 0),
+                    ('account_id', '!=', default_account.id),
+                ], limit=1)
+
+                # Update them
+                move_lines.write({'account_id': default_account.id})
+
+        # update move lines account_id of inbound payments
+        inbound_payments = self.env['account.payment'].search([('payment_type', '=', 'inbound')])
+
+        for payment in inbound_payments:
+            move = payment.move_id
+            journal = payment.journal_id
+            default_account = journal.default_account_id
+
+            if move and default_account:
+                # Find move lines matching conditions
+                move_lines = self.env['account.move.line'].search([
+                    ('move_id', '=', move.id),
+                    ('debit', '!=', 0),
+                    ('account_id', '!=', default_account.id),
+                ], limit=1)
+
+                # Update them
+                move_lines.write({'account_id': default_account.id})
+
+        # update payment outstanding account
+        payments= self.env['account.payment'].search([])
+        for payment in payments:
+            journal=payment.move_id.journal_id
+            if payment.journal_id!=journal:
+                payment.action_draft()
+
+                payment.journal_id=journal
+            if journal and payment.outstanding_account_id != journal.default_account_id:
+                payment.outstanding_account_id=journal.default_account_id

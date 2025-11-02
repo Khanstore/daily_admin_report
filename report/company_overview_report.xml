@@ -1,24 +1,37 @@
 <odoo>
     <template id="journal_table">
         <h3>Journals</h3>
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <tr><th>journal</th><th>opening</th><th>closing</th><th>diff</th></tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="data.get('journals',[])" t-as="jrn">
-                                <tr>
-                                    <td><t t-esc="jrn.get('name')"/></td>
-                                    <t t-set="opening_bal" t-value="jrn.get('opening')"/>
-                                    <t t-set="closing_bal" t-value="jrn.get('closing')"/>
+        <table class="table table-sm table-bordered">
+            <thead>
+                <tr>
+                    <th>journal</th>
+                    <th>opening</th>
+                    <th>closing</th>
+                    <th>diff</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="data.get('journals',[])" t-as="jrn">
+                    <tr>
+                        <td>
+                            <t t-esc="jrn.get('name')"/>
+                        </td>
+                        <t t-set="opening_bal" t-value="jrn.get('opening')"/>
+                        <t t-set="closing_bal" t-value="jrn.get('closing')"/>
 
-                                    <td><t t-esc="opening_bal"/></td>
-                                    <td><t t-esc="closing_bal"/></td>
-                                    <td><t t-esc="closing_bal-opening_bal"/></td>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
+                        <td>
+                            <t t-esc="opening_bal"/>
+                        </td>
+                        <td>
+                            <t t-esc="closing_bal"/>
+                        </td>
+                        <td>
+                            <t t-esc="closing_bal-opening_bal"/>
+                        </td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
     </template>
     <template id="company_overview_template">
         <t t-call="web.html_container">
@@ -26,7 +39,10 @@
                 <div class="page">
                     <h2 style="text-align:center;">Company Overview Report</h2>
                     <p style="text-align:center;">
-                        Period: <strong t-esc="data.get('date_from')"/> to <strong t-esc="data.get('date_to')"/>
+                        Period:
+                        <strong t-esc="data.get('date_from')"/>
+                        to
+                        <strong t-esc="data.get('date_to')"/>
                     </p>
                     <hr/>
 
@@ -34,24 +50,44 @@
                     <div class="row">
                         <div class="col">
                             <ul>
-                                <li>Total Purchases: <strong t-esc="'%.2f' % data.get('total_purchases', 0)"/></li>
-                                <li>Total Reciept: <strong t-esc="'%.2f' % data.get('total_reciept', 0)"/></li>
-                                <li>Gross Profit: <strong t-esc="'%.2f' % data.get('gross_profit', 0)"/></li>
-                                <li>Net Cash Flow: <strong t-esc="'%.2f' % data.get('net_cash_flow', 0)"/></li>
+                                <li>Total Purchases:
+                                    <strong t-esc="'%.2f' % data.get('total_purchases', 0)"/>
+                                </li>
+                                <li>Total Reciept:
+                                    <strong t-esc="'%.2f' % data.get('total_reciept', 0)"/>
+                                </li>
+                                <li>Gross Profit:
+                                    <strong t-esc="'%.2f' % data.get('gross_profit', 0)"/>
+                                </li>
+                                <li>Net Cash Flow:
+                                    <strong t-esc="'%.2f' % data.get('net_cash_flow', 0)"/>
+                                </li>
                             </ul>
                         </div>
                         <div class="col">
                             <ul>
-                                <li>Total Sales: <strong t-esc="'%.2f' % data.get('total_sales', 0)"/></li>
-                                <li>Total POS Sales: <strong t-esc="'%.2f' % data.get('total_pos', 0)"/></li>
-                                <li>Total Payments: <strong t-esc="'%.2f' % data.get('total_payments', 0)"/></li>
+                                <li>Total Sales:
+                                    <strong t-esc="'%.2f' % data.get('total_sales', 0)"/>
+                                </li>
+                                <li>Total POS Sales:
+                                    <strong t-esc="'%.2f' % data.get('total_pos', 0)"/>
+                                </li>
+                                <li>Total Payments:
+                                    <strong t-esc="'%.2f' % data.get('total_payments', 0)"/>
+                                </li>
                             </ul>
                         </div>
                         <div class="col">
                             <ul>
-                                <li>Total QuoteS: <strong t-esc="'%.2f' % data.get('total_quotes', 0)"/> </li>
-                                <li>Total QuoteS: <strong t-esc="'%.2f' % data.get('total_requests', 0)"/> </li>
-                                <li>Total draft Payments: <strong t-esc="'%.2f' % data.get('total_draft_payments', 0)"/> </li>
+                                <li>Total QuoteS:
+                                    <strong t-esc="'%.2f' % data.get('total_quotes', 0)"/>
+                                </li>
+                                <li>Total QuoteS:
+                                    <strong t-esc="'%.2f' % data.get('total_requests', 0)"/>
+                                </li>
+                                <li>Total draft Payments:
+                                    <strong t-esc="'%.2f' % data.get('total_draft_payments', 0)"/>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -59,17 +95,30 @@
                     <h3>Sales Orders</h3>
                     <table class="table table-sm table-bordered">
                         <thead>
-                            <tr><th>Order</th><th>Customer</th><th>Total</th><th>invoice_status</th></tr>
+                            <tr>
+                                <th>Order</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>invoice_status</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <t t-foreach="data.get('sales_orders', [])" t-as="so">
                                 <tr>
-                                    <td><t t-esc="so.get('name')"/></td>
-                                    <td><t t-esc="so.get('partner') + ' (' + str(so.get('partner_balance'))+ ')'" /></td>
-                                    <td class="text-right"><t t-esc="'%.2f' % so.get('amount_total', 0)"/></td>
-                                    <td class="text-right"><t t-esc="so.get('invoice_status')"/></td>
+                                    <td>
+                                        <t t-esc="so.get('name')"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="so.get('partner') + ' (' + str(so.get('partner_balance'))+ ')'"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-esc="'%.2f' % so.get('amount_total', 0)"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-esc="so.get('invoice_status')"/>
+                                    </td>
                                 </tr>
-<!--todo  here to add a tr to add summery-->
+                                <!--todo  here to add a tr to add summery-->
 
                             </t>
                         </tbody>
@@ -78,52 +127,81 @@
                     <h3>Purchase Orders</h3>
                     <table class="table table-sm table-bordered">
                         <thead>
-                            <tr><th>Order</th><th>Vendor</th><th>Total</th></tr>
+                            <tr>
+                                <th>Order</th>
+                                <th>Vendor</th>
+                                <th>Total</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <t t-foreach="data.get('purchase_orders', [])" t-as="po">
                                 <tr>
-                                    <td><t t-esc="po.get('name')"/></td>
-                                    <td><t t-esc="po.get('partner_id', [''])[1]"/></td>
-                                    <td class="text-right"><t t-esc="'%.2f' % po.get('amount_total', 0)"/></td>
+                                    <td>
+                                        <t t-esc="po.get('name')"/>
+                                    </td>
+                                    <td>
+                                        <t t-esc="po.get('partner_id', [''])[1]"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-esc="'%.2f' % po.get('amount_total', 0)"/>
+                                    </td>
                                 </tr>
                             </t>
                         </tbody>
                     </table>
 
-                    <h3>POS Orders</h3>
+                    <!--<h3>POS Orders</h3>
                     <table class="table table-sm table-bordered">
                         <thead>
-                            <tr><th>Order</th><th>Customer</th><th>Total</th></tr>
+                            <tr>
+                                <th>Order</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <t t-foreach="data.get('pos_orders', [])" t-as="pos">
                                 <tr>
-                                    <td><t t-esc="pos.get('name')"/></td>
-                                    <td>  </td>
-                                    <td class="text-right"><t t-esc="'%.2f' % pos.get('amount_total', 0)"/></td>
+                                    <td>
+                                        <t t-esc="pos.get('name')"/>
+                                    </td>
+                                    <td></td>
+                                    <td class="text-right">
+                                        <t t-esc="'%.2f' % pos.get('amount_total', 0)"/>
+                                    </td>
                                 </tr>
                             </t>
                         </tbody>
-                    </table>
+                    </table>-->
 
                     <h3>Payments</h3>
                     <table class="table table-sm table-bordered">
                         <thead>
-                            <tr><th>Payment</th><th>Partner</th><th>OutBound (Dr)</th><th>Inbound(CR)</th></tr>
+                            <tr>
+                                <th>Payment</th>
+                                <th>Partner</th>
+                                <th>OutBound (Dr)</th>
+                                <th>Inbound(CR)</th>
+                            </tr>
                         </thead>
                         <tbody>
+                            <t t-set="total_outbound" t-value="0"/>
+                            <t t-set="total_inbound" t-value="0"/>
                             <t t-foreach="data.get('payments', [])" t-as="pay">
                                 <tr>
-                                    <td><t t-esc="pay.get('name')"/></td>
-                                    <td><t t-if="pay.get('partner_id')">
+                                    <td>
+                                        <t t-esc="pay.get('name')"/>
+                                    </td>
+                                    <td>
+                                        <t t-if="pay.get('partner_id')">
 
-                                        <t t-esc="pay.get('partner_id')[1]"/>
+                                            <t t-esc="pay.get('partner_id')[1]"/>
                                         </t>
                                     </td>
                                     <td class="text-right">
                                         <t t-if="pay.get('payment_type')=='outbound'">
-                                           <t t-esc="'%.2f' % pay.get('amount', 0)"/>
+                                            <t t-set="inbound_amt" t-value="pay.get('amount', 0)"/>
+                                            <t t-esc="'%.2f' % pay.get('amount', 0)"/>
                                         </t>
                                         <t t-else="">0</t>
                                     </td>
@@ -138,25 +216,31 @@
                             </t>
                         </tbody>
                     </table>
-                <h3>Draft Payments</h3>
+                    <h3>Draft Payments</h3>
                     <table class="table table-sm table-bordered">
                         <thead>
-                            <tr><th>Payment</th><th>Partner</th><th>OutBound (Dr)</th><th>Inbound(CR)</th></tr>
+                            <tr>
+                                <th>Payment</th>
+                                <th>Partner</th>
+                                <th>OutBound (Dr)</th>
+                                <th>Inbound(CR)</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <t t-foreach="data.get('draft_payments', [])" t-as="dpay">
                                 <tr>
-                                    <td><t t-esc="dpay.get('name')"/>ff</td>
+                                    <td><t t-esc="dpay.get('name')"/>ff
+                                    </td>
                                     <td>
                                         <t t-if="dpay.get('partner_id')">
 
-                                        <t t-esc="dpay.get('partner_id')[1]"/>
+                                            <t t-esc="dpay.get('partner_id')[1]"/>
                                         </t>
                                     </td>
 
                                     <td class="text-right">
                                         <t t-if="dpay.get('payment_type')=='outbound'">
-                                           <t t-esc="'%.2f' % dpay.get('amount', 0)"/>
+                                            <t t-esc="'%.2f' % dpay.get('amount', 0)"/>
                                         </t>
                                         <t t-else="">0</t>
                                     </td>
@@ -183,12 +267,12 @@
 
 
     <record id="action_report_company_overview" model="ir.actions.report">
-            <field name="name">Daily Admin Report</field>
-            <field name="model">business.overview.report</field>
-            <field name="report_type">qweb-html</field>
-            <field name="report_name">daily_admin_report.company_overview_template</field>
-            <field name="report_file">daily_admin_report.company_overview_template</field>
-            <field name="print_report_name">'Daily Report - %s to %s' % (object.date_start,object.date_end)</field>
-            <field name="binding_type">report</field>
-        </record>
+        <field name="name">Daily Admin Report</field>
+        <field name="model">business.overview.report</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">daily_admin_report.company_overview_template</field>
+        <field name="report_file">daily_admin_report.company_overview_template</field>
+        <field name="print_report_name">'Daily Report - %s to %s' % (object.date_start,object.date_end)</field>
+        <field name="binding_type">report</field>
+    </record>
 </odoo>
