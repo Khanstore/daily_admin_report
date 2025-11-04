@@ -143,6 +143,7 @@ class BusinessOverviewWizard(models.TransientModel):
             'net_cash_flow': net_cash_flow,
             # 'sales_orders': sales.read(['name', 'partner_id', 'amount_total']),
             'sales_orders': [{
+                    'id': sale.id,
                     'name': sale.name,
                     'partner': sale.partner_id.name,
                     'partner_balance': sale.partner_id.total_balance,

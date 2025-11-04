@@ -10,6 +10,8 @@
                     <th>diff</th>
                 </tr>
             </thead>
+            <t t-set="opening_total" t-value="0"/>
+            <t t-set="closing_total" t-value="0"/>
             <tbody>
                 <t t-foreach="data.get('journals',[])" t-as="jrn">
                     <tr>
@@ -19,17 +21,26 @@
                         <t t-set="opening_bal" t-value="jrn.get('opening')"/>
                         <t t-set="closing_bal" t-value="jrn.get('closing')"/>
 
+                        <t t-set="opening_total" t-value="opening_total+opening_bal"/>
+                        <t t-set="closing_total" t-value="closing_total+closing_bal"/>
                         <td>
-                            <t t-esc="opening_bal"/>
+                            <t t-esc="'%.2f' % opening_bal"/>
+
                         </td>
                         <td>
-                            <t t-esc="closing_bal"/>
+                            <t t-esc="'%.2f' % opening_bal"/>
                         </td>
-                        <td>
-                            <t t-esc="closing_bal-opening_bal"/>
+                        <td >
+                            <t t-esc="'%.2f' % (closing_bal-opening_bal)"/>
                         </td>
                     </tr>
                 </t>
+                <tr>
+                    <th>Total</th>
+                    <th><t t-esc="'%.2f' % opening_total"/></th>
+                    <th><t t-esc="'%.2f' % closing_total"/></th>
+                    <th><t t-esc="'%.2f' % (opening_total-closing_total)"/></th>
+                </tr>
             </tbody>
         </table>
     </template>
@@ -106,7 +117,11 @@
                             <t t-foreach="data.get('sales_orders', [])" t-as="so">
                                 <tr>
                                     <td>
-                                        <t t-esc="so.get('name')"/>
+                                        <a t-att-href="'/odoo/sale.order/' + str(so.get('id')) "
+                                           style="color: #007bff; text-decoration: underline;"
+                                           target="_blank">
+                                            <t t-esc="so.get('name')"/>
+                                        </a><t t-esc="so.get('id')"/>
                                     </td>
                                     <td>
                                         <t t-esc="so.get('partner') + ' (' + str(so.get('partner_balance'))+ ')'"/>
@@ -137,7 +152,11 @@
                             <t t-foreach="data.get('purchase_orders', [])" t-as="po">
                                 <tr>
                                     <td>
-                                        <t t-esc="po.get('name')"/>
+                                        <a t-att-href="'/odoo/purchase.order/' + str(po.get('id')) "
+                                           style="color: #007bff; text-decoration: underline;"
+                                           target="_blank">
+                                            <t t-esc="po.get('name')"/>
+                                        </a>
                                     </td>
                                     <td>
                                         <t t-esc="po.get('partner_id', [''])[1]"/>
@@ -190,7 +209,11 @@
                             <t t-foreach="data.get('payments', [])" t-as="pay">
                                 <tr>
                                     <td>
-                                        <t t-esc="pay.get('name')"/>
+                                        <a t-att-href="'/odoo/account.payment/' + str(pay.get('id')) "
+                                           style="color: #007bff; text-decoration: underline;"
+                                           target="_blank">
+                                            <t t-esc="pay.get('name')"/>
+                                        </a>
                                     </td>
                                     <td>
                                         <t t-if="pay.get('partner_id')">
@@ -200,21 +223,32 @@
                                     </td>
                                     <td class="text-right">
                                         <t t-if="pay.get('payment_type')=='outbound'">
-                                            <t t-set="inbound_amt" t-value="pay.get('amount', 0)"/>
-                                            <t t-esc="'%.2f' % pay.get('amount', 0)"/>
+                                            <t t-set="outbound_amt" t-value="pay.get('amount', 0)"/>
+                                            <t t-esc="'%.2f' % outbound_amt"/>
+                                            <t t-set="total_outbound" t-value="total_outbound+outbound_amt"/>
                                         </t>
                                         <t t-else="">0</t>
                                     </td>
                                     <td class="text-right">
 
                                         <t t-if="pay.get('payment_type')=='inbound'">
-                                            <t t-esc="'%.2f' % pay.get('amount', 0)"/>
+                                            <t t-set="inbound_amt" t-value="pay.get('amount', 0)"/>
+                                            <t t-esc="'%.2f' % inbound_amt"/>
+                                            <t t-set="total_inbound" t-value="total_inbound+inbound_amt"/>
                                         </t>
                                         <t t-else="">0</t>
                                     </td>
                                 </tr>
                             </t>
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th>Total</th>
+                                <th><t t-esc="total_outbound"/></th>
+                                <th><t t-esc="total_inbound"/></th>
+                            </tr>
+                        </tfoot>
                     </table>
                     <h3>Draft Payments</h3>
                     <table class="table table-sm table-bordered">
@@ -229,7 +263,11 @@
                         <tbody>
                             <t t-foreach="data.get('draft_payments', [])" t-as="dpay">
                                 <tr>
-                                    <td><t t-esc="dpay.get('name')"/>ff
+                                    <td><a t-att-href="'/odoo/account.payment/' + str(dpay.get('id')) "
+                                           style="color: #007bff; text-decoration: underline;"
+                                           target="_blank">
+                                            <t t-esc="dpay.get('name')"/>
+                                        </a>
                                     </td>
                                     <td>
                                         <t t-if="dpay.get('partner_id')">
