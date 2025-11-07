@@ -57,6 +57,8 @@ class BusinessOverviewWizard(models.TransientModel):
             ('date_order', '<=', date_to_utc),
             ('state', 'in', ['draft']),
         ])
+        public_partner = env.ref('base.public_partner')
+        quotations = quotations.filtered(lambda q: q.partner_id.id != public_partner.id)
 
         # 📦 Purchase Orders (Datetime field)
         purchases = env['purchase.order'].search([
@@ -117,7 +119,7 @@ class BusinessOverviewWizard(models.TransientModel):
 
         # Totals
         total_sales = sum(s.amount_total for s in sales)
-        total_quotes = sum(s.amount_total for s in quotations)
+        total_quotes = sum(s.amount_total for s in quotations  )
         total_purchases = sum(p.amount_total for p in purchases)
         total_requests = sum(p.amount_total for p in requests)
         total_pos = sum(p.amount_total for p in pos_orders)
@@ -150,7 +152,16 @@ class BusinessOverviewWizard(models.TransientModel):
                     'amount_total': sale.amount_total,
                     'invoice_status': sale.invoice_status,
                 } for sale in sales],
+            'quotations': [{
+                    'id': sale.id,
+                    'name': sale.name,
+                    'partner': sale.partner_id.name,
+                    'partner_balance': sale.partner_id.total_balance,
+                    'amount_total': sale.amount_total,
+                    'invoice_status': sale.invoice_status,
+                } for sale in quotations],
             'purchase_orders': purchases.read(['name', 'partner_id', 'amount_total']),
+            'requests': requests.read(['name', 'partner_id', 'amount_total']),
             'pos_orders': pos_orders.read(['name', 'partner_id', 'amount_total']),
             'payments': payments.read(['name', 'partner_id', 'amount', 'payment_type']),
             'draft_payments': draft_payments.read(['name', 'partner_id', 'amount', 'payment_type']),

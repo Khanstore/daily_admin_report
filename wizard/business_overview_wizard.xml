@@ -27,6 +27,6 @@
     <menuitem id="menu_business_overview_root"
               name="Daily Admin Report"
               parent="account.menu_finance_reports"
-              groups="account.group_account_readonly"
+              groups="base.group_user"
               action="action_business_overview_wizard"/>
 </odoo>

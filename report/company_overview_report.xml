@@ -28,7 +28,7 @@
 
                         </td>
                         <td>
-                            <t t-esc="'%.2f' % opening_bal"/>
+                            <t t-esc="'%.2f' % closing_bal"/>
                         </td>
                         <td >
                             <t t-esc="'%.2f' % (closing_bal-opening_bal)"/>
@@ -44,6 +44,78 @@
             </tbody>
         </table>
     </template>
+    <template id="sales_table">
+        <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>invoice_status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="sales" t-as="so">
+                                <tr>
+                                    <td>
+                                        <a t-att-href="'/odoo/sale.order/' + str(so.get('id')) "
+                                           style="color: #007bff; text-decoration: underline;"
+                                           target="_blank">
+                                            <t t-esc="so.get('name')"/>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <t t-esc="so.get('partner') + ' (' + str(so.get('partner_balance'))+ ')'"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-esc="'%.2f' % so.get('amount_total', 0)"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-esc="so.get('invoice_status')"/>
+                                    </td>
+                                </tr>
+
+
+                            </t>
+                        </tbody>
+            <!--todo  here to add a tr to add summery-->
+            <tfoot>
+                <tr> <td>Total </td></tr>
+            </tfoot>
+                    </table>
+    </template>
+    <template id="purchase_table">
+        <table class="table table-sm table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Vendor</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="indents" t-as="po">
+                                <tr>
+                                    <td>
+                                        <a t-att-href="'/odoo/purchase.order/' + str(po.get('id')) "
+                                           style="color: #007bff; text-decoration: underline;"
+                                           target="_blank">
+                                            <t t-esc="po.get('name')"/>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <t t-esc="po.get('partner_id', [''])[1]"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <t t-esc="'%.2f' % po.get('amount_total', 0)"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+    </template>
+
     <template id="company_overview_template">
         <t t-call="web.html_container">
             <t t-call="web.external_layout">
@@ -104,70 +176,22 @@
                     </div>
 
                     <h3>Sales Orders</h3>
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Order</th>
-                                <th>Customer</th>
-                                <th>Total</th>
-                                <th>invoice_status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="data.get('sales_orders', [])" t-as="so">
-                                <tr>
-                                    <td>
-                                        <a t-att-href="'/odoo/sale.order/' + str(so.get('id')) "
-                                           style="color: #007bff; text-decoration: underline;"
-                                           target="_blank">
-                                            <t t-esc="so.get('name')"/>
-                                        </a><t t-esc="so.get('id')"/>
-                                    </td>
-                                    <td>
-                                        <t t-esc="so.get('partner') + ' (' + str(so.get('partner_balance'))+ ')'"/>
-                                    </td>
-                                    <td class="text-right">
-                                        <t t-esc="'%.2f' % so.get('amount_total', 0)"/>
-                                    </td>
-                                    <td class="text-right">
-                                        <t t-esc="so.get('invoice_status')"/>
-                                    </td>
-                                </tr>
-                                <!--todo  here to add a tr to add summery-->
+                    <t t-set="sales" t-value="data.get('sales_orders', [])"/>
+                    <t t-call="daily_admin_report.sales_table"/>
 
-                            </t>
-                        </tbody>
-                    </table>
+
+                    <h3>Quotations</h3>
+                    <t t-set="sales" t-value="data.get('quotations', [])"/>
+                    <t t-call="daily_admin_report.sales_table"/>
 
                     <h3>Purchase Orders</h3>
-                    <table class="table table-sm table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Order</th>
-                                <th>Vendor</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <t t-foreach="data.get('purchase_orders', [])" t-as="po">
-                                <tr>
-                                    <td>
-                                        <a t-att-href="'/odoo/purchase.order/' + str(po.get('id')) "
-                                           style="color: #007bff; text-decoration: underline;"
-                                           target="_blank">
-                                            <t t-esc="po.get('name')"/>
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <t t-esc="po.get('partner_id', [''])[1]"/>
-                                    </td>
-                                    <td class="text-right">
-                                        <t t-esc="'%.2f' % po.get('amount_total', 0)"/>
-                                    </td>
-                                </tr>
-                            </t>
-                        </tbody>
-                    </table>
+                    <t t-set="indents" t-value="data.get('purchase_orders', [])"/>
+                    <t t-call="daily_admin_report.purchase_table"/>
+
+                    <h3>Purchase quotations</h3>
+                    <t t-set="indents" t-value="data.get('requests', [])"/>
+                    <t t-call="daily_admin_report.purchase_table"/>
+
 
                     <!--<h3>POS Orders</h3>
                     <table class="table table-sm table-bordered">
@@ -241,14 +265,12 @@
                                 </tr>
                             </t>
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <th></th>
-                                <th>Total</th>
-                                <th><t t-esc="total_outbound"/></th>
-                                <th><t t-esc="total_inbound"/></th>
-                            </tr>
-                        </tfoot>
+                        <tr>
+                            <th></th>
+                            <th>Total</th>
+                            <th><t t-esc="total_outbound"/></th>
+                            <th><t t-esc="total_inbound"/></th>
+                        </tr>
                     </table>
                     <h3>Draft Payments</h3>
                     <table class="table table-sm table-bordered">
