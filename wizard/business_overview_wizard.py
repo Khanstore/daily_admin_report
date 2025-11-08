@@ -83,14 +83,14 @@ class BusinessOverviewWizard(models.TransientModel):
 
         # 💰 Payments (Date field — no need to convert)
         payments = env['account.payment'].search([
-            ('date', '>=', date_from_utc),
-            ('date', '<=', date_to_utc),
+            ('date', '>=', self.date_from),
+            ('date', '<=', self.date_to),
             ('state', '=', 'paid'),
         ])
         # 💰 Payments (Date field — no need to convert)
         draft_payments = env['account.payment'].search([
-            ('date', '>=', date_from_utc),
-            ('date', '<=', date_to_utc),
+            ('date', '>=', self.date_from),
+            ('date', '<=', self.date_to),
             ('state', '<>', 'paid'),
         ])
         journal_data = []
