@@ -263,25 +263,25 @@ class BusinessOverviewWizard(models.TransientModel):
             date_to=datetime.date.today()
         if date_included:
             date_to= date_to + timedelta(days=1)
-        search_domain=[('move_id', '!=', False), ('journal_id', 'in', journals.ids), ('date', '<', date_to)]
-        search_domain.append(('state','in',state_in))
+        search_domain=[('move_id', '!=', False), ('journal_id', 'in', journals.ids),('is_matched', '=', "TRUE"), ('date', '<', date_to)]
+        # search_domain.append(('state','in',state_in))
 
 
         pmts = self.env['account.payment'].search( search_domain )
         payment_dict = {}
         for jrn in journals:
-            payment_dict[jrn.id]={'name': jrn.name,'type':jrn.type,'balance':0}
+            payment_dict[jrn.id]={'name': jrn.name,'type':jrn.type,'default_account_id':jrn.default_account_id.id,'balance':0}
 
 
         # Step 3: Loop through the payments and aggregate by journal_id
         for pmt in pmts:
             journal_id = pmt.journal_id.id  # Get the journal ID for the current payment
-            if pmt.payment_type=='inbound':
-                amt = pmt.amount  # Get the amount of the payment
-            else:
-                amt=-pmt.amount
-
-            payment_dict[journal_id]["balance"] += amt  # Add to existing amount if journal_id already in dict
+            # if pmt.payment_type=='inbound':
+            #     amt = pmt.amount  # Get the amount of the payment
+            # else:
+            #     amt=-pmt.amount
+            if pmt.outstanding_account_id.id==payment_dict[journal_id]['default_account_id']:
+                payment_dict[journal_id]["balance"] += pmt.amount_company_currency_signed  # Add to existing amount if journal_id already in dict
 
         return payment_dict
 
