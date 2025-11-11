@@ -1,6 +1,9 @@
 {
     'name': 'Daily Admin Report',
     'version': '18.0.0.1',
+'description':"""
+Last update 11-11-2025-
+    """,
     'author': 'SM Ashraf',
     'category': 'Reporting',
     'summary': 'Daily business overview (sales, purchase, POS, payments)',

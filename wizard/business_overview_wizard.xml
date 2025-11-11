@@ -11,6 +11,7 @@
                 <footer>
                     <button name="action_print_report" string="Print Report" type="object" class="btn-primary"/>
                     <button name="journal_entry_correction" string="Journal Entry correction" type="object" class="btn-primary"/>
+                    <button name="cleanup_orphan_records" string="Databse correction" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>

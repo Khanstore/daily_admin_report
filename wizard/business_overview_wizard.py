@@ -376,3 +376,42 @@ class BusinessOverviewWizard(models.TransientModel):
                 payment.journal_id=journal
             if journal and payment.outstanding_account_id != journal.default_account_id:
                 payment.outstanding_account_id=journal.default_account_id
+
+
+    def cleanup_orphan_records(self):
+            queries = [
+                # Remove orphaned mail subtype followers
+                """DELETE FROM public.mail_followers_mail_message_subtype_rel 
+                   WHERE mail_followers_id NOT IN (SELECT id FROM mail_followers);""",
+
+                # Remove orphaned move send wizard links
+                """DELETE FROM public.account_move_send_wizard_res_partner_rel 
+                   WHERE account_move_send_wizard_id NOT IN (SELECT id FROM account_move_send_wizard);""",
+
+                # Remove orphaned payment register move line relations
+                """DELETE FROM public.account_payment_register_move_line_rel 
+                   WHERE wizard_id NOT IN (SELECT id FROM public.account_payment_register);""",
+
+                # Remove orphaned document access records
+                """DELETE FROM public.documents_access 
+                   WHERE document_id NOT IN (SELECT id FROM documents_document);""",
+
+                # Remove orphaned website track records
+                """DELETE FROM public.website_track 
+                   WHERE visitor_id NOT IN (SELECT id FROM website_visitor);""",
+
+                # Remove orphaned livechat channels
+                """DELETE FROM public.discuss_channel 
+                   WHERE livechat_visitor_id NOT IN (SELECT id FROM website_visitor);""",
+
+                # Clear entire relation table for sale advance payment invoices
+                """DELETE FROM public.sale_advance_payment_inv_sale_order_rel;""",
+
+                # Remove orphaned POS preparation order lines
+                """DELETE FROM public.pos_preparation_display_orderline 
+                   WHERE preparation_display_order_id NOT IN (SELECT id FROM pos_preparation_display_order);""",
+            ]
+
+            for query in queries:
+                self.env.cr.execute(query)
+            self.env.cr.commit()
