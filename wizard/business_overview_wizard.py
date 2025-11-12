@@ -401,6 +401,7 @@ class BusinessOverviewWizard(models.TransientModel):
                    WHERE visitor_id NOT IN (SELECT id FROM website_visitor);""",
 
                 # Remove orphaned livechat channels
+
                 """DELETE FROM public.discuss_channel 
                    WHERE livechat_visitor_id NOT IN (SELECT id FROM website_visitor);""",
 
@@ -415,3 +416,12 @@ class BusinessOverviewWizard(models.TransientModel):
             for query in queries:
                 self.env.cr.execute(query)
             self.env.cr.commit()
+
+            self.env.cr.execute('DROP TABLE IF EXISTS book_shop_daily_statement')
+
+            # Optionally, commit the transaction if necessary
+            self.env.cr.commit()
+
+            #
+            # self.env.cr.execute('delete from ir_module where model="book.shop.daily.statement"')
+            # self.env.cr.commit()
